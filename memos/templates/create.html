@@ -1,0 +1,77 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html> 
+<head>
+  <title>Create Memo</title>
+
+  <!-- 'viewport' is used by bootstrap to respond to device size -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Javascript:  JQuery from a content distribution network (CDN) -->
+  <script
+     src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js">
+  </script>
+
+  <!-- Bootstrap includes javascript and css  (must follow jquery) -->
+  <link rel="stylesheet"
+   href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+   <script
+    src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js">
+  </script>
+
+   <!-- Our own style sheet -->
+   <link rel="stylesheet" href="/static/css/memos.css" />
+
+
+</head>
+<body>
+<div class="container">
+  <div class="row">
+    <div class="col-sm">
+      <label for="datememo">Date:</label>
+    </div>
+    <div class="col-sm">
+      <input type="date" name="dateinput" id="dateinput" size="50"><br>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm">
+      <label for="memoinput">Text:</label>
+    </div>
+    <div class="col-sm">
+      <input type="text" name="memoinput" id="memoinput" size = "50"><br>
+    </div>
+  </div>
+  <div class="row">
+    <input type="submit" name="submission" id="submission">
+  </div>
+</div>
+
+<script>
+
+  $("#submission").click( function() {
+    // Getting data
+    var memoInput = $("#memoinput").val();
+    var dateInput = $("#dateinput").val();
+    console.log("Date picked: " + dateInput +"\nText input submitted: "+ memoInput);
+
+    if (memoInput != "" & dateInput != "") { // if both inputs are not empty string
+      
+      $.ajax({
+        type: 'POST',
+        contentType: "application/json",
+        dataType: 'json',
+        url: '/_store',
+        data: JSON.stringify({"date": dateInput, "text": memoInput}),
+        success: function(data) {
+          if (data.done) {
+            window.location.replace("/");
+          }
+        }
+      });
+    }
+  });
+</script>
+
+</div> <!-- container -->
+</body>
+</html>

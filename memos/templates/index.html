@@ -36,7 +36,7 @@
   {% endif %}
 {% endwith %}
 
-<h1>Memos</h1>
+<h1 style="margin-left:30px" color="blue">Memos</h1>
 
 {% if g.memos %}
     {% for memo in g.memos %}
@@ -48,12 +48,50 @@
   <div class="col-md-10">
     {{ memo.text }}
   </div>
+  <div class="row">
+
+    <div class="col-sm">
+
+      <input type="hidden" value="{{ memo.id }}" name="dbdel"></input>
+      <input type="submit" value="Delete" name="database" style="margin-right: 10px"></input>
+    </div>
   </div> <!-- row -->
+  
   </div> <!-- memo -->
   {% endfor %}
 {% else %}
   <p>No memos for you. </p>  
 {% endif %}
+  <div class="row">
+    <input type="submit" id="create" value="Create new memo" >
+
+    </input>
+  </div>
+
+<script>
+  // Delete memo
+  $("input[name='dbdel']").click(function(){
+    var entry = $(this).parents(".memo");
+    var picked = entry.find("input[name='database']");
+
+
+    $.ajax({
+      type: 'POST',
+      contentType: 'application/json',
+      dataType: 'json',
+      url: '/_delete',
+      data: JSON.stringify({'database': picked.val()}),
+      success: function(data) {
+          window.location.reload();
+        
+      }
+    });
+  });
+
+  $("#create").click( function() {
+    window.location.replace("/create");
+  });
+</script>
 
  
 

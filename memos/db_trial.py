@@ -25,7 +25,7 @@ print("Using URL '{}'".format(MONGO_CLIENT_URL))
 
 try: 
     dbclient = MongoClient(MONGO_CLIENT_URL)
-    db = getattr(dbclient, CONFIG.DB)
+    db = getattr(dbclient, str(CONFIG.DB))
     print("Got database")
     collection = db.dated
     print("Using sample collection")

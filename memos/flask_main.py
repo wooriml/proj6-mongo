@@ -31,6 +31,10 @@ from dateutil import tz  # For interpreting local times
 from pymongo import MongoClient
 
 import config
+from bson import ObjectId
+
+
+
 CONFIG = config.configuration()
 
 
@@ -58,7 +62,7 @@ app.secret_key = CONFIG.SECRET_KEY
 
 try: 
     dbclient = MongoClient(MONGO_CLIENT_URL)
-    db = getattr(dbclient, CONFIG.DB)
+    db = getattr(dbclient, str(CONFIG.DB)) ## modify str(CONFIG.DB) to change the int value to str value
     collection = db.dated
 
 except:
@@ -80,16 +84,33 @@ def index():
       app.logger.debug("Memo: " + str(memo))
   return flask.render_template('index.html')
 
-
+"""
 @app.route("/jstest")
 def jstest():
     return flask.render_template('jstest.html')
+"""
 
-# We don't have an interface for creating memos yet
-# @app.route("/create")
-# def create():
-#     app.logger.debug("Create")
-#     return flask.render_template('create.html')
+#directs to create.html when the memo is being created.
+@app.route("/create")
+def create():
+     app.logger.debug("Create")
+     return flask.render_template('create.html')
+
+#get and post the memo when receiving the memo
+@app.route("/_store", methods=['GET', 'POST'])
+def store():
+    text = request.json['text']
+    date = request.json['date']
+    collection.insert({"type": "dated_memo", "date": date, "text": text})
+    return flask.jsonify(done=True)
+
+# enable deletion 
+@app.route("/_delete", methods=['GET', 'POST'])
+def delete():
+    del_obj = ObjectId(request.json['database']) #get the data object
+    print("deleting object: " +del_obj )
+    result = collection.delete_one({"_id": del_obj}) #delete the data 
+    return flask.jsonify({'result': result.deleted_count}) 
 
 
 @app.errorhandler(404)
@@ -150,5 +171,16 @@ if __name__ == "__main__":
     app.debug=CONFIG.DEBUG
     app.logger.setLevel(logging.DEBUG)
     app.run(port=CONFIG.PORT,host="0.0.0.0")
+
+    
+
+
+
+
+
+
+
+
+
 
     
